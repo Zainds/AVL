@@ -1,26 +1,21 @@
 ﻿#include<iostream>
-
 using namespace std;
 
-class BST
+struct node
 {
-    struct node
-    {
-        int data;
-        node* left;
-        node* right;
-        int height;
-    };
+    int data;
+    node* left;
+    node* right;
+    int height;
+};
 
+struct BST
+{
     node* root;
 
-    void makeEmpty(node* t)
+    BST()
     {
-        if(t == NULL)
-            return;
-        makeEmpty(t->left);
-        makeEmpty(t->right);
-        delete t;
+        root = nullptr;
     }
 
     node* insert(int x, node* t)
@@ -193,13 +188,7 @@ class BST
         cout << t->data << " ";
         inorder(t->right);
     }
-
-public:
-    BST()
-    {
-        root = NULL;
-    }
-
+    
     void insert(int x)
     {
         root = insert(x, root);
@@ -215,33 +204,35 @@ public:
         inorder(root);
         cout << endl;
     }
+
+    void print_Tree(node* p, int level)     //Функция симметричного обхода
+    {
+        if (p)  //Пока не встретится пустое звено
+        {
+            print_Tree(p->right, level + 1);    //Рекурсивная функция для вывода левого поддерева
+            for (int i = 0; i < level; i++) cout << "   "; // Выставляем пробелами визуальное дерево
+            cout << p->data << endl;     //Отображаем корень дерева
+            print_Tree(p->left, level + 1);     //Рекурсивная функци для вывода правого поддерева
+        }
+    }
 };
 
 int main()
 {
     BST t;
-    t.insert(20);
-    t.insert(25);
-    t.insert(15);
-    t.insert(10);
-    t.insert(30);
+    t.insert(1);
+    t.insert(2);
+    t.insert(3);
+    t.insert(4);
     t.insert(5);
-    t.insert(35);
-    t.insert(67);
-    t.insert(43);
-    t.insert(21);
-    t.insert(10);
-    t.insert(89);
-    t.insert(38);
-    t.insert(69);
-    t.display();
-    t.remove(5);
+    t.print_Tree(t.root, 2);
+    /*t.remove(5);
     t.remove(35);
     t.remove(65);
     t.remove(89);
     t.remove(43);
     t.remove(88);
     t.remove(20);
-    t.remove(38);
-    t.display();
+    t.remove(38);*/
+    //t.display();
 }
