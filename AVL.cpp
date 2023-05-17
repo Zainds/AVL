@@ -1,7 +1,7 @@
 ﻿#include<iostream>
 using namespace std;
 
-struct node
+struct node // структура узла АВЛ дерева
 {
     int data;
     node* left;
@@ -18,18 +18,18 @@ struct BST
         root = nullptr;
     }
 
-    node* insert(int x, node* t)
-    {
+    node* add(int x, node* t)
+    {   //функция добавления узла в дерево
         if(t == NULL)
-        {
+        {   // если нет корня
             t = new node;
             t->data = x;
             t->height = 0;
             t->left = t->right = NULL;
         }
         else if(x < t->data)
-        {
-            t->left = insert(x, t->left);
+        {   
+            t->left = add(x, t->left);
             if(height(t->left) - height(t->right) == 2)
             {
                 if(x < t->left->data)
@@ -40,7 +40,7 @@ struct BST
         }
         else if(x > t->data)
         {
-            t->right = insert(x, t->right);
+            t->right = add(x, t->right);
             if(height(t->right) - height(t->left) == 2)
             {
                 if(x > t->right->data)
@@ -86,87 +86,6 @@ struct BST
         return singleRightRotate(t);
     }
 
-    node* findMin(node* t)
-    {
-        if(t == NULL)
-            return NULL;
-        else if(t->left == NULL)
-            return t;
-        else
-            return findMin(t->left);
-    }
-
-    node* findMax(node* t)
-    {
-        if(t == NULL)
-            return NULL;
-        else if(t->right == NULL)
-            return t;
-        else
-            return findMax(t->right);
-    }
-
-    node* remove(int x, node* t)
-    {
-        node* temp;
-
-        // Element not found
-        if(t == NULL)
-            return NULL;
-
-        // Searching for element
-        else if(x < t->data)
-            t->left = remove(x, t->left);
-        else if(x > t->data)
-            t->right = remove(x, t->right);
-
-        // Element found
-        // With 2 children
-        else if(t->left && t->right)
-        {
-            temp = findMin(t->right);
-            t->data = temp->data;
-            t->right = remove(t->data, t->right);
-        }
-        // With one or zero child
-        else
-        {
-            temp = t;
-            if(t->left == NULL)
-                t = t->right;
-            else if(t->right == NULL)
-                t = t->left;
-            delete temp;
-        }
-        if(t == NULL)
-            return t;
-
-        t->height = max(height(t->left), height(t->right))+1;
-
-        // If node is unbalanced
-        // If left node is deleted, right case
-        if(height(t->left) - height(t->right) == 2)
-        {
-            // right right case
-            if(height(t->left->left) - height(t->left->right) == 1)
-                return singleLeftRotate(t);
-            // right left case
-            else
-                return doubleLeftRotate(t);
-        }
-        // If right node is deleted, left case
-        else if(height(t->right) - height(t->left) == 2)
-        {
-            // left left case
-            if(height(t->right->right) - height(t->right->left) == 1)
-                return singleRightRotate(t);
-            // left right case
-            else
-                return doubleRightRotate(t);
-        }
-        return t;
-    }
-
     int height(node* t)
     {
         return (t == NULL ? -1 : t->height);
@@ -180,29 +99,9 @@ struct BST
             return height(t->left) - height(t->right);
     }
 
-    void inorder(node* t)
+    void add(int x)
     {
-        if(t == NULL)
-            return;
-        inorder(t->left);
-        cout << t->data << " ";
-        inorder(t->right);
-    }
-    
-    void insert(int x)
-    {
-        root = insert(x, root);
-    }
-
-    void remove(int x)
-    {
-        root = remove(x, root);
-    }
-
-    void display()
-    {
-        inorder(root);
-        cout << endl;
+        root = add(x, root);
     }
 
     void print_Tree(node* p, int level)     //Функция симметричного обхода
@@ -215,17 +114,41 @@ struct BST
             print_Tree(p->left, level + 1);     //Рекурсивная функци для вывода правого поддерева
         }
     }
+    bool IsStrictlyBinary(node* root) { // Проверить является ли дерево строгим
+
+        if (root->left == NULL && root->right == NULL)
+            return true;
+        else if ((root->left == NULL && root->right != NULL) ||
+            (root->right == NULL && root->left != NULL))
+            return false;
+        else
+            return IsStrictlyBinary(root->left) && IsStrictlyBinary(root->right);
+    }
 };
 
 int main()
 {
+    setlocale(LC_ALL, "");
     BST t;
-    t.insert(1);
-    t.insert(2);
-    t.insert(3);
-    t.insert(4);
-    t.insert(5);
-    t.print_Tree(t.root, 2);
+    int elements;
+    /*t.add(6);
+    t.add(9);
+    t.add(3);
+    t.add(12);
+    t.add(15);
+    t.add(8);*/
+    cout << "Введите кол-во элементов дерева:  ";
+    cin >> elements; cout << "\n";
+    for (int i = 0; i < elements; i++) { //Заполнение дерева
+        int x;
+        cout << "Введите " << i + 1 << " элемент дерева:  ";
+        cin >> x;
+        t.add(x);
+    }
+    t.print_Tree(t.root, 0);
+    if(t.IsStrictlyBinary(t.root))cout << "Дерево является строгим";
+    else cout << "Дерево не является строгим";
+    
     /*t.remove(5);
     t.remove(35);
     t.remove(65);
